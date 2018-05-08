@@ -1,0 +1,65 @@
+<html>
+    <head>
+        <title> Sign in </title>
+        <meta charset='utf-8' />
+    </head>
+    <body>
+        <script src='./user-service.js'> </script>
+        <script>
+            async function signIn() {
+                const errorElem = document.querySelector('div#sign-in #error');
+                errorElem.innerHTML = "";
+
+                const getInputVal = (name) => {
+                    const elem = document.querySelector('div#sign-in input[name="'+ name +'"]');
+                    return elem.value;
+                };
+
+                const email = getInputVal('email');
+                const username = getInputVal('username');
+                const password = getInputVal('password');
+
+                let headers = new Headers();
+                headers.append('Accept', 'application/json');
+                headers.append('Content-Type', 'application/json');
+
+                const body = {
+                    email: email,
+                    username: username,
+                    password: password,
+                };
+
+                const response = await fetch(USER_SERVICE_URL + '/api/v1/user', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(body),
+                });
+
+                if (!response.ok) {
+                    errorElem.innerHTML = 'Error while creating user.';
+                    return;
+                }
+
+                await userServiceGetToken(username, password);
+
+                const params = (new URL(document.location)).searchParams;
+                const redirectUrl = params.get('url');
+                if (redirectUrl === null) {
+                    window.location = "/";
+                } else {
+                    window.location = redirectUrl;
+                }
+            }
+        </script>
+        <h1> Sign in </h1>
+        <div id='sign-in'>
+            Email: <input type='text' name='email' /> </br>
+            Username: <input type='text' name='username' /> </br>
+            Password: <input type='password' name='password' /> </br>
+            <p id='error' style='color: red;'> </p>
+            <button onclick='signIn()'> Sign in </button>
+        </div>
+
+        <a href='/login.html'> Log in if you already have an account </a>
+    </body>
+</html>

@@ -1,0 +1,47 @@
+<html>
+    <head>
+        <title> Login </title>
+        <meta charset='utf-8' />
+    </head>
+    <body>
+        <script src='./user-service.js'> </script>
+        <script>
+            async function getToken() {
+                const errorElem = document.querySelector('div#login #login-error');
+                errorElem.innerHTML = "";
+
+                const getInputVal = (name) => {
+                    const elem = document.querySelector('div#login input[name="'+ name +'"]');
+                    return elem.value;
+                };
+
+                const username = getInputVal('username');
+                const password = getInputVal('password');
+
+
+                const token = await userServiceGetToken(username, password);
+                if (!token) {
+                    errorElem.innerHTML = 'Failed to login';
+                    return;
+                }
+
+
+                const params = (new URL(document.location)).searchParams;
+                const redirectUrl = params.get('url');
+                if (redirectUrl === null) {
+                    window.location = "/";
+                } else {
+                    window.location = redirectUrl;
+                }
+            }
+        </script>
+        <h1> Login </h1>
+        <div id='login'>
+            Username: <input type='text' name='username' /> </br>
+            Password: <input type='password' name='password' /> </br>
+            <button onclick='getToken()'> Login </button>
+            <p id='login-error' style='color: red;'> </p>
+            <a href='/signin.html'> Sign in if you don't have an account </a>
+        </div>
+    </body>
+</html>
