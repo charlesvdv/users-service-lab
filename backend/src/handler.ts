@@ -1,15 +1,18 @@
 import * as KoaRouter from "koa-router";
 import * as jwt from "jsonwebtoken";
 import { GetJwtKey } from "./utils"
+import * as bcrypt from "bcrypt";
 
 export type RouterContext = KoaRouter.IRouterContext;
 export type RouterNext = () => Promise<any>;
 
 export async function NewUserHandler(ctx: RouterContext, next: RouterNext): Promise<any> {
     const body = ctx.request.body;
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+
     const user = await ctx.User.create({
         email: body.email,
-        password: body.password,
+        password: hashedPassword,
         username: body.username,
     });
 
@@ -40,9 +43,14 @@ export async function GetTokenHandler(ctx: RouterContext, next: RouterNext): Pro
     const user = await ctx.User.findOne({
         where: {
             username: body.username,
-            password: body.password,
         }
     });
+
+    const isPasswordCorrect = await bcrypt.compare(body.password, user.password);
+    if (!isPasswordCorrect) {
+        ctx.throw(401);
+        return;
+    }
 
     let token = jwt.sign({id: user.id}, GetJwtKey(), {
         expiresIn: "1h",

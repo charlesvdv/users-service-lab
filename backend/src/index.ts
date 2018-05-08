@@ -7,6 +7,7 @@ import * as BodyParser from "koa-bodyparser";
 import * as KoaRouter from "koa-router";
 import * as Handler from "./handler";
 import * as KoaJwt from "koa-jwt";
+import * as KoaCors from "@koa/cors";
 import { GetJwtKey } from "./utils";
 
 const API_PREFIX = "/api/v1";
@@ -19,6 +20,7 @@ const API_PREFIX = "/api/v1";
         storage: env.DB_STORAGE || "./user.db"
     };
     const app = new Koa();
+    app.use(KoaCors({origin: '*'}));
 
     const db = new Sequelize(dbConnInfo);
     app.context.db = db;
