@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title> Dummy example of user service </title>
+        <meta charset='utf-8' />
+    </head>
+    <body>
+        <script src='./user-service.js'></script>
+        <script>
+            window.onload = () => {
+                const token = getUserToken();
+                const tokenHolderElem = document.querySelector('div#token-holder');
+                tokenHolderElem.innerHTML = token;
+            };
+        </script>
+        <p> Your token is <div id='token-holder'> NULL </div> </p>
+    </body>
+</html>
