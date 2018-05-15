@@ -66,3 +66,15 @@ async function userServiceGetToken(username, password) {
 
     return token;
 }
+
+function redirectWithQueryParams(htmlPage) {
+    const url = `/${htmlPage}`;
+
+    const params = (new URL(document.location)).searchParams;
+    const redirectUrl = params.get('url');
+    if (redirectUrl === null) {
+        window.location = url;
+    } else {
+        window.location = `${url}?url=${encodeURIComponent(redirectUrl)}`;
+    }
+}
